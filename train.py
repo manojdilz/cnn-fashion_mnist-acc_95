@@ -9,12 +9,16 @@ import torchmetrics as metrics
 from tqdm import tqdm
 
 # Model HyperParameters & etc
+LR=0.00005
+MOMENTUM=0.9
+WEIGHT_DECAY=0.01
 IMG_SIZE = (64,64)
-NUM_CLASSES = 10
-BATCH_SIZE = 32
-EPOCHS = 5
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-DOWNLOAD_DATA = False
+IN_CHANNELS=1
+NUM_CLASSES=10
+BATCH_SIZE=32
+EPOCHS=5
+DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+DOWNLOAD_DATA=False
 SAVE_MODEL=False
 LOAD_MODEL=True
 VALIDATE=True
@@ -94,8 +98,8 @@ val_loader = data.DataLoader(
         )
 
 #Model, optimizer, criterion & metrics
-model = NeuralNet(in_channels=1,out_dims=NUM_CLASSES).to(DEVICE)
-optimizer = optim.SGD(model.parameters(), lr=0.00005, momentum=0.9, weight_decay=0.01)
+model = NeuralNet(in_channels=IN_CHANNELS,out_dims=NUM_CLASSES).to(DEVICE)
+optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
 criterion = nn.CrossEntropyLoss()
 def accuracy_fn(pred, target):
     pred_classes = torch.argmax(F.softmax(pred, dim=-1), dim=-1)
@@ -122,7 +126,6 @@ if VALIDATE:
         accuracy_sum += accuracy.item()
     print(f'Loss: {loss_sum/(iteration+1):.4f}\t Accuracy: {accuracy_sum/(iteration+1):.4f}')
     exit()
-
 
 #training
 for epoch in range(EPOCHS):
